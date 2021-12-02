@@ -1,0 +1,30 @@
+digraph "dhis" {
+  node [shape="box",style="rounded",fontname="Helvetica",fontsize="14"]
+  edge [fontsize="10",fontname="Helvetica"]
+
+  // Node Definitions:
+  "org.hisp.dhis:dhis-service-validation:jar"[label=<dhis-service-validation<font point-size="10"><br/>(compile/test)</font>>]
+  "org.hisp.dhis:dhis-service-core:jar"[label=<dhis-service-core>]
+  "org.hisp.dhis:dhis-service-program-rule:jar"[label=<dhis-service-program-rule<font point-size="10"><br/>(compile/test)</font>>]
+  "org.hisp.dhis:dhis-service-administration:jar"[label=<dhis-service-administration<font point-size="10"><br/>(compile/test)</font>>]
+  "org.hisp.dhis:dhis-support-audit:jar"[label=<dhis-support-audit<font point-size="10"><br/>(test)</font>>]
+  "org.hisp.dhis:dhis-service-dxf2:jar"[label=<dhis-service-dxf2>]
+  "org.hisp.dhis:dhis-service-analytics:jar"[label=<dhis-service-analytics>]
+  "org.hisp.dhis:dhis-service-tracker:jar"[label=<dhis-service-tracker>]
+  "org.hisp.dhis:dhis-service-reporting:jar"[label=<dhis-service-reporting>]
+
+  // Edge Definitions:
+  "org.hisp.dhis:dhis-service-validation:jar" -> "org.hisp.dhis:dhis-service-core:jar"
+  "org.hisp.dhis:dhis-service-program-rule:jar" -> "org.hisp.dhis:dhis-service-core:jar"
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar"
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-support-audit:jar"
+  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar"
+  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
+  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-dxf2:jar"
+  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-administration:jar"
+  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
+  "org.hisp.dhis:dhis-service-tracker:jar" -> "org.hisp.dhis:dhis-service-dxf2:jar"
+  "org.hisp.dhis:dhis-service-reporting:jar" -> "org.hisp.dhis:dhis-service-analytics:jar"
+  "org.hisp.dhis:dhis-service-reporting:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
+}
