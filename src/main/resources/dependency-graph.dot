@@ -14,17 +14,18 @@ digraph "dhis" {
   "org.hisp.dhis:dhis-service-reporting:jar"[label=<dhis-service-reporting>]
 
   // Edge Definitions:
-  "org.hisp.dhis:dhis-service-validation:jar" -> "org.hisp.dhis:dhis-service-core:jar"
-  "org.hisp.dhis:dhis-service-program-rule:jar" -> "org.hisp.dhis:dhis-service-core:jar"
-  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar"
-  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
-  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-support-audit:jar"
-  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar"
-  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
-  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-dxf2:jar"
-  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-administration:jar"
-  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
-  "org.hisp.dhis:dhis-service-tracker:jar" -> "org.hisp.dhis:dhis-service-dxf2:jar"
-  "org.hisp.dhis:dhis-service-reporting:jar" -> "org.hisp.dhis:dhis-service-analytics:jar"
-  "org.hisp.dhis:dhis-service-reporting:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
+  // "org.hisp.dhis:dhis-service-core:jar:compile" -> "root" [weight=180, label="03:00 min"]
+  "org.hisp.dhis:dhis-service-validation:jar" -> "org.hisp.dhis:dhis-service-core:jar"[weight=107, label="01:47 min"]
+  "org.hisp.dhis:dhis-service-program-rule:jar" -> "org.hisp.dhis:dhis-service-core:jar"[weight=100, label="01:40 min"]
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar"[weight=99, label="01:39 min"]
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-service-validation:jar"[weight=99, label="01:39 min"]
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-support-audit:jar"[weight=99, label="01:39 min"]
+  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar"[weight=223, label="03:43 min"]
+  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-service-validation:jar"[weight=223, label="03:43 min"]
+  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-dxf2:jar"[weight=246, label="04:06 min"]
+  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-administration:jar"[weight=246, label="04:06 min"]
+  "org.hisp.dhis:dhis-service-analytics:jar" -> "org.hisp.dhis:dhis-service-validation:jar"[weight=246, label="04:06 min"]
+  "org.hisp.dhis:dhis-service-tracker:jar" -> "org.hisp.dhis:dhis-service-dxf2:jar"[weight=198, label="03:18 min"]
+  "org.hisp.dhis:dhis-service-reporting:jar" -> "org.hisp.dhis:dhis-service-analytics:jar"[weight=161, label="02:41 min"]
+  "org.hisp.dhis:dhis-service-reporting:jar" -> "org.hisp.dhis:dhis-service-validation:jar"[weight=161, label="02:41 min"]
 }
