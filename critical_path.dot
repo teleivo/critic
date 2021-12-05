@@ -1,16 +1,16 @@
 strict digraph "maven build order" {
   label="Maven build order - critical path ends at org.hisp.dhis:dhis-service-reporting:jar and takes 12.30min";
-  "org.hisp.dhis:dhis-service-validation:jar" [ label="dhis-service-validation" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-service-core:jar" [ label="dhis-service-core" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-service-program-rule:jar" [ label="dhis-service-program-rule" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-service-administration:jar" [ label="dhis-service-administration" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-support-audit:jar" [ label="dhis-support-audit" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-service-dxf2:jar" [ label="dhis-service-dxf2" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-service-analytics:jar" [ label="dhis-service-analytics" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-service-tracker:jar" [ label="dhis-service-tracker" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-service-reporting:jar" [ label="dhis-service-reporting" shape="box" fontsize="16" ];
-  "root:root:null" [ label="root" shape="box" fontsize="16" ];
-  "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-service-validation:jar" [ penwidth="3" color="#b22800" weight="107.0" fontsize="15" label="1.78min" ];
+  "org.hisp.dhis:dhis-service-validation:jar" [ label="dhis-service-validation" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-service-core:jar" [ label="dhis-service-core" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-service-program-rule:jar" [ label="dhis-service-program-rule" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-service-administration:jar" [ label="dhis-service-administration" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-support-audit:jar" [ label="dhis-support-audit" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-service-dxf2:jar" [ label="dhis-service-dxf2" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-service-analytics:jar" [ label="dhis-service-analytics" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-service-tracker:jar" [ label="dhis-service-tracker" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-service-reporting:jar" [ label="dhis-service-reporting" fontsize="16" shape="box" style="rounded" ];
+  "root:root:null" [ label="root" fontsize="16" shape="box" style="rounded" ];
+  "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-service-validation:jar" [ penwidth="2" color="#b22800" weight="107.0" fontsize="15" label="1.78min" ];
   "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar" [ weight="100.0" fontsize="15" label="1.67min" ];
   "org.hisp.dhis:dhis-service-program-rule:jar" -> "org.hisp.dhis:dhis-service-administration:jar" [ weight="99.0" fontsize="15" label="1.65min" ];
   "org.hisp.dhis:dhis-service-validation:jar" -> "org.hisp.dhis:dhis-service-administration:jar" [ weight="99.0" fontsize="15" label="1.65min" ];

@@ -1,6 +1,6 @@
-package com.github.teleivo;
+package com.github.teleivo.critic;
 
-import static com.github.teleivo.App.criticalPath;
+import static com.github.teleivo.critic.App.criticalPath;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.util.Collections;
