@@ -16,6 +16,7 @@
     <jgrapht.version>1.5.1</jgrapht.version>
     <junit.version>5.8.2</junit.version>
     <picoli.version>4.6.2</picoli.version>
+    <commons-lang3.version>3.12.0</commons-lang3.version>
   </properties>
 
   <dependencyManagement>
@@ -45,6 +46,11 @@
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-io</artifactId>
       <version>${jgrapht.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

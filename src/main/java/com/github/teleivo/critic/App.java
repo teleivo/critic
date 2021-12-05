@@ -29,9 +29,21 @@ import picocli.CommandLine.Option;
 public class App implements Callable<Integer>
 {
 
+    private static final String GRAPH_LABEL_WEIGHT = "weight";
+
     @Option( names = { "-d",
         "--dependency-graph" }, required = true, description = "Input DOT file of Maven dependency graph generated using https://github.com/ferstl/depgraph-maven-plugin" )
     private File dependencyGraph;
+
+    // TODO make required
+    @Option( names = { "-b",
+        "--build-log" }, required = false, description = "Maven build log containing the Maven 'Reactor Summary for' build timings.\nYou can run a build with '--log-file' to directly store it in a file." )
+    private File mavenBuildLog;
+
+    // TODO make required
+    @Option( names = { "-a",
+        "--artifact-mapping" }, required = false, description = "CSV mapping Maven coordinates to entries in the Maven reactor summary build timings.\nExpects 2 columns [coordinates,reactor]" )
+    private File mavenArtifactMapping;
 
     @Option( names = { "-o",
         "--output" }, required = true, description = "Destination where DOT file with highlighted critical path will be written to" )
@@ -64,7 +76,7 @@ public class App implements Callable<Integer>
         // Note: the DOTImporter ignores weights unlike JSONImporter and others
         // :( So I have to set them explicitly
         importer.addEdgeAttributeConsumer( ( p, attr ) -> {
-            if ( p.getSecond().equals( "weight" ) )
+            if ( p.getSecond().equals( GRAPH_LABEL_WEIGHT ) )
             {
                 g.setEdgeWeight( p.getFirst(), Double.parseDouble( attr.getValue() ) );
             }
@@ -124,7 +136,7 @@ public class App implements Callable<Integer>
         exporter.setEdgeAttributeProvider( e -> {
             Map<String, Attribute> attrs = new HashMap<>();
             double weight = rg.getEdgeWeight( e );
-            attrs.put( "weight", DefaultAttribute.createAttribute( weight ) );
+            attrs.put( GRAPH_LABEL_WEIGHT, DefaultAttribute.createAttribute( weight ) );
             attrs.put( "label", DefaultAttribute.createAttribute( String.format( "%.2fmin", weight / 60 ) ) );
             attrs.put( "fontsize", DefaultAttribute.createAttribute( 15 ) );
             if ( criticalEdges.contains( e ) )
