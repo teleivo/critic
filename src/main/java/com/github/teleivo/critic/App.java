@@ -2,11 +2,15 @@ package com.github.teleivo.critic;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -30,6 +34,8 @@ public class App implements Callable<Integer>
 {
 
     private static final String GRAPH_LABEL_WEIGHT = "weight";
+
+    private static final Pattern MAVEN_PROJECT_DURATION = Pattern.compile( "\\] (.+) \\.+[A-Za-z\\s\\[]+(.+)\\]" );
 
     @Option( names = { "-d",
         "--dependency-graph" }, required = true, description = "Input DOT file of Maven dependency graph generated using https://github.com/ferstl/depgraph-maven-plugin" )
@@ -56,6 +62,42 @@ public class App implements Callable<Integer>
     public Integer call()
         throws Exception
     {
+
+        // TODO read timings from Maven build log
+        try ( Scanner sc = new Scanner( mavenBuildLog ) )
+        {
+            boolean start = false;
+            boolean end = false;
+            while ( sc.hasNextLine() )
+            {
+                String l = sc.nextLine();
+                if ( !start && l.contains( "Reactor Summary" ) )
+                {
+                    start = true;
+                }
+                else if ( start && l.contains( "BUILD" ) )
+                {
+                    end = true;
+                }
+                else if ( start && !end )
+                {
+                    // TODO handle lines without a match. should I return null
+                    // instead?
+                    System.out.println( l );
+                    System.out.println( Arrays.toString( mavenProjectDuration( l ) ) );
+                }
+            }
+        }
+        catch ( Exception e )
+        {
+            // TODO: handle exception
+        }
+
+        if ( true )
+        {
+            return 0;
+        }
+
         Graph<Integer, DefaultWeightedEdge> g = GraphTypeBuilder
             .directed()
             .allowingMultipleEdges( false )
@@ -206,6 +248,17 @@ public class App implements Callable<Integer>
         {
             return new HashCodeBuilder( 17, 37 ).append( groupId ).append( artifactId ).append( type ).toHashCode();
         }
+    }
+
+    static String[] mavenProjectDuration( final String in )
+    {
+        Matcher m = MAVEN_PROJECT_DURATION.matcher( in );
+        if ( !m.find() )
+        {
+            return new String[] {};
+        }
+
+        return new String[] { m.group( 1 ), m.group( 2 ) };
     }
 
     static List<DefaultWeightedEdge> criticalPath( Graph<Integer, DefaultWeightedEdge> g )

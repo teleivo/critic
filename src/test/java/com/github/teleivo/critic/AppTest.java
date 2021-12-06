@@ -1,6 +1,8 @@
 package com.github.teleivo.critic;
 
 import static com.github.teleivo.critic.App.criticalPath;
+import static com.github.teleivo.critic.App.mavenProjectDuration;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.util.Collections;
@@ -142,5 +144,29 @@ class AppTest
         List<DefaultWeightedEdge> cp = criticalPath( g );
 
         assertIterableEquals( List.of( e3, e1 ), cp );
+    }
+
+    @Test
+    void mavenProjectDurationsSuccess()
+    {
+        assertArrayEquals( new String[] { "DHIS Node service", "4.543 s" },
+            mavenProjectDuration(
+                "2021-12-01T08:30:34.9304126Z [INFO] DHIS Node service .................................. SUCCESS [  4.543 s]" ) );
+        assertArrayEquals( new String[] { "DHIS Core API Implementations", "03:00 min" },
+            mavenProjectDuration(
+                "2021-12-01T08:30:34.9308634Z [INFO] DHIS Core API Implementations ...................... SUCCESS [03:00 min]" ) );
+        assertArrayEquals( new String[] { "DHIS ACL service", "0.980 s" },
+            mavenProjectDuration(
+                "[INFO] DHIS ACL service ................................... FAILURE [  0.980 s]" ) );
+    }
+
+    @Test
+    void mavenProjectDurationsGivenMissingDuration()
+    {
+        assertArrayEquals( new String[] {}, mavenProjectDuration(
+            "2021-12-01T08:30:34.9304126Z [INFO] DHIS Node service .................................. SUCCESS" ) );
+        assertArrayEquals( new String[] {},
+            mavenProjectDuration(
+                "[INFO] DHIS Support Commons ............................... SKIPPED" ) );
     }
 }
