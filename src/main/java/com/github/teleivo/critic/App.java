@@ -205,6 +205,8 @@ public class App implements Callable<Integer>
         System.out.println( label );
 
         // TODO can I directly create a png alongside the dot file?
+        // TODO adjust penwidth in proportion to totalCost so arrows to costly
+        // modules are thicker
         DOTExporter<Integer, DefaultWeightedEdge> exporter = new DOTExporter<>();
         exporter.setGraphIdProvider( () -> "\"maven build order\"" );
         exporter.setGraphAttributeProvider( () -> {
