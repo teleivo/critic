@@ -1,0 +1,39 @@
+maven project name,maven project coordinates
+DHIS API,org.hisp.dhis:dhis-api
+DHIS Support Parent Project,org.hisp.dhis:dhis-support
+DHIS Support JSON filtering,org.hisp.dhis:dhis-support-json-filtering
+DHIS Support Commons,org.hisp.dhis:dhis-support-commons 
+DHIS External Support,org.hisp.dhis:dhis-support-external
+DHIS Database Migration Support,org.hisp.dhis:dhis-support-db-migration
+DHIS Hibernate Support,org.hisp.dhis:dhis-support-hibernate
+DHIS Support Test Json,org.hisp.dhis:dhis-support-test-json
+DHIS Test Support,org.hisp.dhis:dhis-support-test
+DHIS System Support,org.hisp.dhis:dhis-support-system
+DHIS Services Parent Project,org.hisp.dhis:dhis-services
+DHIS Schema service,org.hisp.dhis:dhis-service-schema
+DHIS Settings service,org.hisp.dhis:dhis-service-setting
+DHIS ACL service,org.hisp.dhis:dhis-service-acl
+DHIS Artemis AMQP/JMS Support,org.hisp.dhis:dhis-support-artemis
+DHIS Audit Support,org.hisp.dhis:dhis-support-audit
+DHIS Audit consumer service,org.hisp.dhis:dhis-service-audit-consumer
+DHIS Node service,org.hisp.dhis:dhis-service-node
+DHIS JDBC Service,org.hisp.dhis:dhis-support-jdbc
+DHIS Expression Parser Support,org.hisp.dhis:dhis-support-expression-parser
+DHIS Cache invalidation Support,org.hisp.dhis:dhis-support-cache-invalidation
+DHIS Core API Implementations,org.hisp.dhis:dhis-service-core
+DHIS Validation Service,org.hisp.dhis:dhis-service-validation
+DHIS Program Rule Service,org.hisp.dhis:dhis-service-program-rule
+DHIS Administration Service,org.hisp.dhis:dhis-service-administration
+DHIS DXF 2 Data Exchange,org.hisp.dhis:dhis-service-dxf2
+DHIS Analytics,org.hisp.dhis:dhis-service-analytics
+DHIS Tracker services,org.hisp.dhis:dhis-service-tracker
+DHIS Reporting Service,org.hisp.dhis:dhis-service-reporting
+DHIS Web API,org.hisp.dhis:dhis-web-api
+DHIS Web API Test,org.hisp.dhis:dhis-web-api-test
+DHIS Web Modules Project,org.hisp.dhis:dhis-web
+DHIS Common Functionality for Web,org.hisp.dhis:dhis-web-commons
+DHIS Common Resources for Web,org.hisp.dhis:dhis-web-commons-resources
+DHIS Data Entry,org.hisp.dhis:dhis-web-dataentry
+DHIS Web Approval,org.hisp.dhis:dhis-web-approval
+DHIS Web Apps,org.hisp.dhis:dhis-web-apps
+DHIS Web Portal,org.hisp.dhis:dhis-web-portal
