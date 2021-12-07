@@ -28,3 +28,6 @@ target
 .settings
 .classpath
 .project
+
+*.dot
+!example/*.dot

@@ -1,8 +1,9 @@
 maven project name,maven project coordinates
+DHIS 2,org.hisp.dhis:dhis
 DHIS API,org.hisp.dhis:dhis-api
 DHIS Support Parent Project,org.hisp.dhis:dhis-support
 DHIS Support JSON filtering,org.hisp.dhis:dhis-support-json-filtering
-DHIS Support Commons,org.hisp.dhis:dhis-support-commons 
+DHIS Support Commons,org.hisp.dhis:dhis-support-commons
 DHIS External Support,org.hisp.dhis:dhis-support-external
 DHIS Database Migration Support,org.hisp.dhis:dhis-support-db-migration
 DHIS Hibernate Support,org.hisp.dhis:dhis-support-hibernate
@@ -37,3 +38,5 @@ DHIS Data Entry,org.hisp.dhis:dhis-web-dataentry
 DHIS Web Approval,org.hisp.dhis:dhis-web-approval
 DHIS Web Apps,org.hisp.dhis:dhis-web-apps
 DHIS Web Portal,org.hisp.dhis:dhis-web-portal
+DHIS Service Field Filtering,org.hisp.dhis:dhis-service-field-filtering
+DHIS Metadata Proposals,org.hisp.dhis:dhis-service-metadata-workflow

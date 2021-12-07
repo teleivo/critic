@@ -1,9 +1,10 @@
 package com.github.teleivo.critic;
 
 import static com.github.teleivo.critic.App.criticalPath;
-import static com.github.teleivo.critic.App.mavenProjectDuration;
+import static com.github.teleivo.critic.App.parseMavenReactorSummaryEntry;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -147,26 +148,25 @@ class AppTest
     }
 
     @Test
-    void mavenProjectDurationsSuccess()
+    void parseMavenReactorSummaryEntrySuccess()
     {
         assertArrayEquals( new String[] { "DHIS Node service", "4.543 s" },
-            mavenProjectDuration(
+            parseMavenReactorSummaryEntry(
                 "2021-12-01T08:30:34.9304126Z [INFO] DHIS Node service .................................. SUCCESS [  4.543 s]" ) );
         assertArrayEquals( new String[] { "DHIS Core API Implementations", "03:00 min" },
-            mavenProjectDuration(
+            parseMavenReactorSummaryEntry(
                 "2021-12-01T08:30:34.9308634Z [INFO] DHIS Core API Implementations ...................... SUCCESS [03:00 min]" ) );
         assertArrayEquals( new String[] { "DHIS ACL service", "0.980 s" },
-            mavenProjectDuration(
+            parseMavenReactorSummaryEntry(
                 "[INFO] DHIS ACL service ................................... FAILURE [  0.980 s]" ) );
     }
 
     @Test
-    void mavenProjectDurationsGivenMissingDuration()
+    void parseMavenReactorSummaryEntryGivenMissingDuration()
     {
-        assertArrayEquals( new String[] {}, mavenProjectDuration(
+        assertNull( parseMavenReactorSummaryEntry(
             "2021-12-01T08:30:34.9304126Z [INFO] DHIS Node service .................................. SUCCESS" ) );
-        assertArrayEquals( new String[] {},
-            mavenProjectDuration(
-                "[INFO] DHIS Support Commons ............................... SKIPPED" ) );
+        assertNull( parseMavenReactorSummaryEntry(
+            "[INFO] DHIS Support Commons ............................... SKIPPED" ) );
     }
 }

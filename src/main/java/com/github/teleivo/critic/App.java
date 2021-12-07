@@ -1,8 +1,11 @@
 package com.github.teleivo.critic;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,9 +14,12 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import com.github.teleivo.critic.maven.BuildDuration;
+import com.github.teleivo.critic.maven.Module;
+
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
@@ -41,14 +47,12 @@ public class App implements Callable<Integer>
         "--dependency-graph" }, required = true, description = "Input DOT file of Maven dependency graph generated using https://github.com/ferstl/depgraph-maven-plugin" )
     private File dependencyGraph;
 
-    // TODO make required
     @Option( names = { "-b",
-        "--build-log" }, required = false, description = "Maven build log containing the Maven 'Reactor Summary for' build timings.\nYou can run a build with '--log-file' to directly store it in a file." )
+        "--build-log" }, required = true, description = "Maven build log containing the Maven 'Reactor Summary for' build timings.\nYou can run a build with '--log-file' to directly store it in a file." )
     private File mavenBuildLog;
 
-    // TODO make required
     @Option( names = { "-a",
-        "--artifact-mapping" }, required = false, description = "CSV mapping Maven coordinates to entries in the Maven reactor summary build timings.\nExpects 2 columns [coordinates,reactor]" )
+        "--artifact-mapping" }, required = true, description = "CSV mapping Maven project names to project coordinates.\nExpects 2 columns [name,coordinate]" )
     private File mavenArtifactMapping;
 
     @Option( names = { "-o",
@@ -62,8 +66,14 @@ public class App implements Callable<Integer>
     public Integer call()
         throws Exception
     {
+        // Note: using a Map instead of a Set because Set does not provide a
+        // get(). I need to retrieve the module in the reactorModules "set"
+        // since it contains the build durations
+        // which I do not have in my "query" module that I get from the
+        // maven dependency graph
+        final Map<Module, Module> reactorModules = new HashMap<>();
+        final Map<String, String> mavenCoordinates = parseMavenNameToCoordinates( mavenArtifactMapping.toPath() );
 
-        // TODO read timings from Maven build log
         try ( Scanner sc = new Scanner( mavenBuildLog ) )
         {
             boolean start = false;
@@ -81,21 +91,31 @@ public class App implements Callable<Integer>
                 }
                 else if ( start && !end )
                 {
-                    // TODO handle lines without a match. should I return null
-                    // instead?
-                    System.out.println( l );
-                    System.out.println( Arrays.toString( mavenProjectDuration( l ) ) );
+                    String[] entry = parseMavenReactorSummaryEntry( l );
+                    if ( entry == null )
+                    {
+                        continue;
+                    }
+                    String coordinates = mavenCoordinates.get( entry[0] );
+                    if ( coordinates == null )
+                    {
+                        // throw new IllegalArgumentException(
+                        // String.format( "Cannot find maven project coordinates
+                        // for given name '%s'", entry[0] ) );
+                        // TODO somehow this is swallowed
+                        System.out.println(
+                            String.format( "Cannot find maven project coordinates for given name '%s'", entry[0] ) );
+                        return 1;
+                    }
+                    Duration d = Duration.parse( BuildDuration.parse( entry[1] ) );
+                    Module m = new Module( coordinates, d );
+                    reactorModules.put( m, m );
                 }
             }
         }
         catch ( Exception e )
         {
             // TODO: handle exception
-        }
-
-        if ( true )
-        {
-            return 0;
         }
 
         Graph<Integer, DefaultWeightedEdge> g = GraphTypeBuilder
@@ -106,12 +126,19 @@ public class App implements Callable<Integer>
             .edgeClass( DefaultWeightedEdge.class )
             .vertexSupplier( SupplierUtil.createIntegerSupplier() )
             .buildGraph();
-        Map<Integer, MavenModule> modules = new HashMap<>();
+        Map<Integer, Module> modules = new HashMap<>();
         DOTImporter<Integer, DefaultWeightedEdge> importer = new DOTImporter<>();
+        List<Module> missingDurations = new ArrayList<>();
         importer.addVertexAttributeConsumer( ( p, a ) -> {
             if ( p.getSecond() == "ID" )
             {
-                modules.put( p.getFirst(), MavenModule.of( a.getValue() ) );
+                Module m = new Module( a.getValue() );
+                if ( !reactorModules.containsKey( m ) )
+                {
+                    missingDurations.add( m );
+                    return;
+                }
+                modules.put( p.getFirst(), reactorModules.get( m ) );
             }
         } );
 
@@ -125,21 +152,40 @@ public class App implements Callable<Integer>
         } );
         importer.importGraph( g, dependencyGraph );
 
-        // Note: add root node and connect independent modules to it. This is
-        // necessary so that the time it takes to
-        // build such a module shows up in the graph. Think of the root node as
-        // the maven command starting the
-        // build.
-        // TODO this edge needs the proper weight
+        if ( !missingDurations.isEmpty() )
+        {
+            throw new IllegalArgumentException(
+                String.format(
+                    "no build duration in reactor summary for modules %s which are part of the dependency graph",
+                    missingDurations ) );
+        }
+
         Integer root = g.addVertex();
+        modules.put( root, new Module( "root:root" ) );
         for ( Integer v : g.vertexSet() )
         {
-            if ( v != root && g.outDegreeOf( v ) == 0 )
+            if ( v == root )
+            {
+                continue;
+            }
+            // Note: add root node and connect independent modules to it. This
+            // is
+            // necessary so that the time it takes to
+            // build such a module shows up in the graph. Think of the root node
+            // as
+            // the maven command starting the
+            // build.
+            if ( g.outDegreeOf( v ) == 0 )
             {
                 g.addEdge( v, root );
             }
+            // Add edge weights from reactor build summary
+            Module m = modules.get( v );
+            for ( DefaultWeightedEdge e : g.outgoingEdgesOf( v ) )
+            {
+                g.setEdgeWeight( e, m.getBuildDuration().getSeconds() );
+            }
         }
-        modules.put( root, MavenModule.of( "root:root" ) );
 
         EdgeReversedGraph<Integer, DefaultWeightedEdge> rg = new EdgeReversedGraph<>( g );
         List<DefaultWeightedEdge> criticalEdges = criticalPath( rg );
@@ -169,7 +215,7 @@ public class App implements Callable<Integer>
         exporter.setVertexIdProvider( v -> "\"" + modules.get( v ) + "\"" );
         exporter.setVertexAttributeProvider( v -> {
             Map<String, Attribute> attrs = new LinkedHashMap<>();
-            attrs.put( "label", DefaultAttribute.createAttribute( modules.get( v ).artifactId ) );
+            attrs.put( "label", DefaultAttribute.createAttribute( modules.get( v ).getArtifactId() ) );
             attrs.put( "fontsize", DefaultAttribute.createAttribute( 16 ) );
             attrs.put( "shape", DefaultAttribute.createAttribute( "box" ) );
             attrs.put( "style", DefaultAttribute.createAttribute( "rounded" ) );
@@ -192,70 +238,29 @@ public class App implements Callable<Integer>
         return 0;
     }
 
-    static class MavenModule
+    static Map<String, String> parseMavenNameToCoordinates( Path csv )
+        throws IOException
     {
-        String groupId;
+        // NOTE: it does not handle a CSV header differently than the rest of
+        // the CSV
 
-        String artifactId;
-
-        String type;
-
-        public static MavenModule of( final String coordinates )
+        try (
+            Stream<String> lines = Files.lines( csv ); )
         {
-            String[] components = coordinates.split( ":" );
-            MavenModule m = new MavenModule();
-            if ( components.length > 2 )
-            {
-                m.groupId = components[0];
-                m.artifactId = components[1];
-                m.type = components[2];
-            }
-            else if ( components.length > 1 )
-            {
-                m.groupId = components[0];
-                m.artifactId = components[1];
-            }
-            else
-            {
-                m.groupId = components[0];
-            }
-            return m;
-        }
-
-        @Override
-        public String toString()
-        {
-            return groupId + ":" + artifactId + ":" + type;
-        }
-
-        @Override
-        public boolean equals( Object o )
-        {
-            if ( this == o )
-                return true;
-
-            if ( o == null || getClass() != o.getClass() )
-                return false;
-
-            MavenModule that = (MavenModule) o;
-
-            return new EqualsBuilder().append( groupId, that.groupId ).append( artifactId, that.artifactId )
-                .append( type, that.type ).isEquals();
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return new HashCodeBuilder( 17, 37 ).append( groupId ).append( artifactId ).append( type ).toHashCode();
+            Map<String, String> resultMap = lines.map(
+                line -> line.split( "," ) )
+                .collect(
+                    Collectors.toMap( line -> line[0].trim(), line -> line[1].trim() ) );
+            return resultMap;
         }
     }
 
-    static String[] mavenProjectDuration( final String in )
+    static String[] parseMavenReactorSummaryEntry( final String in )
     {
         Matcher m = MAVEN_PROJECT_DURATION.matcher( in );
         if ( !m.find() )
         {
-            return new String[] {};
+            return null;
         }
 
         return new String[] { m.group( 1 ), m.group( 2 ) };
