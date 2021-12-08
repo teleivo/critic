@@ -112,7 +112,7 @@ public class App implements Callable<Integer>
         {
             throw new IllegalArgumentException(
                 String.format(
-                    "no build duration in reactor summary for modules %s which are part of the dependency graph",
+                    "no build duration in reactor summary for modules found in dependency graph %s",
                     missingDurations ) );
         }
 
