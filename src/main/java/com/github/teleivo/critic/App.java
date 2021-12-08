@@ -135,19 +135,11 @@ public class App implements Callable<Integer>
 
         EdgeReversedGraph<Integer, DefaultWeightedEdge> rg = new EdgeReversedGraph<>( g );
         List<DefaultWeightedEdge> criticalEdges = criticalPath( rg );
-        double totalCost = 0.0;
-        Integer maxTarget = null;
-        for ( DefaultWeightedEdge e : criticalEdges )
-        {
-            if ( maxTarget == null )
-            {
-                maxTarget = rg.getEdgeTarget( e );
-            }
-            totalCost += rg.getEdgeWeight( e );
-        }
+        // TODO what if there is no criticalEdge?
+        EdgeWeightSummary summary = EdgeWeightSummary.of( rg, criticalEdges );
 
         String label = String.format( "Maven build order - critical path ends at %s and takes %.2fmin",
-            modules.get( maxTarget ), totalCost / 60 );
+            modules.get( summary.getMaxTarget() ), summary.getTotal() / 60 );
         System.out.println( label );
 
         // TODO can I directly create a png alongside the dot file?
@@ -177,13 +169,78 @@ public class App implements Callable<Integer>
             attrs.put( "fontsize", DefaultAttribute.createAttribute( 15 ) );
             if ( criticalEdges.contains( e ) )
             {
-                attrs.put( "penwidth", DefaultAttribute.createAttribute( 2 ) );
+                attrs.put( "penwidth",
+                    DefaultAttribute.createAttribute( penWidth( summary.min, summary.max, weight ) ) );
                 attrs.put( "color", DefaultAttribute.createAttribute( "#b22800" ) );
             }
             return attrs;
         } );
         exporter.exportGraph( rg, output );
         return 0;
+    }
+
+    static class EdgeWeightSummary
+    {
+
+        double min;
+
+        double max;
+
+        double total;
+
+        Integer maxTarget;
+
+        static <K, V> EdgeWeightSummary of( Graph<Integer, DefaultWeightedEdge> g, List<DefaultWeightedEdge> edges )
+        {
+            double total = 0.0;
+            double min = Integer.MAX_VALUE;
+            double max = Integer.MIN_VALUE;
+            Integer maxTarget = null;
+            for ( DefaultWeightedEdge e : edges )
+            {
+                double weight = g.getEdgeWeight( e );
+                if ( maxTarget == null )
+                {
+                    maxTarget = g.getEdgeTarget( e );
+                }
+                if ( weight > max )
+                {
+                    max = weight;
+                }
+                if ( weight < min )
+                {
+                    min = weight;
+                }
+                total += weight;
+            }
+            EdgeWeightSummary s = new EdgeWeightSummary();
+            s.min = min;
+            s.max = max;
+            s.total = total;
+            s.maxTarget = maxTarget;
+            return s;
+        }
+
+        public double getMin()
+        {
+            return min;
+        }
+
+        public double getMax()
+        {
+            return max;
+        }
+
+        public double getTotal()
+        {
+            return total;
+        }
+
+        public Integer getMaxTarget()
+        {
+            return maxTarget;
+        }
+
     }
 
     static List<DefaultWeightedEdge> criticalPath( Graph<Integer, DefaultWeightedEdge> g )
@@ -225,6 +282,18 @@ public class App implements Callable<Integer>
             criticalEdges.add( g.getEdge( s, t ) );
         }
         return criticalEdges;
+    }
+
+    /**
+     * Adjust an edge weight relative to its contribution
+     *
+     **/
+    static double penWidth( double min, double max, double weight )
+    {
+        final double minPenWidth = 1;
+        final double maxPenWidth = 10;
+        return minPenWidth + (((maxPenWidth - minPenWidth) * (weight - min)) / (max - min));
+
     }
 
     public static void main( String[] args )

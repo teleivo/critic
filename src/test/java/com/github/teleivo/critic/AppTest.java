@@ -1,6 +1,8 @@
 package com.github.teleivo.critic;
 
 import static com.github.teleivo.critic.App.criticalPath;
+import static com.github.teleivo.critic.App.penWidth;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.util.Collections;
@@ -142,5 +144,14 @@ class AppTest
         List<DefaultWeightedEdge> cp = criticalPath( g );
 
         assertIterableEquals( List.of( e3, e1 ), cp );
+    }
+
+    @Test
+    void penWidthGivenNNN()
+    {
+        assertEquals( 1.0, penWidth( 1.0, 10.0, 1.0 ) );
+        assertEquals( 5.0, penWidth( 1.0, 10.0, 5.0 ) );
+        assertEquals( 10.0, penWidth( 1.0, 10.0, 10.0 ) );
+        assertEquals( 10.0, penWidth( 1.0, 100.0, 100.0 ) );
     }
 }
