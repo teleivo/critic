@@ -29,6 +29,11 @@ public class Module
         return buildDuration;
     }
 
+    public String getCoordinates()
+    {
+        return groupId + ":" + artifactId;
+    }
+
     // TODO cleanup constructor duplication
     public Module( final String coordinates )
     {
@@ -58,10 +63,7 @@ public class Module
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append( groupId )
-            .append( ":" )
-            .append( artifactId );
+        StringBuilder sb = new StringBuilder( getCoordinates() );
         if ( buildDuration != null )
         {
             sb.append( "[" )

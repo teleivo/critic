@@ -153,9 +153,13 @@ public class App implements Callable<Integer>
             return attrs;
         } );
         exporter.setVertexIdProvider( v -> "\"" + modules.get( v ) + "\"" );
+        exporter.setVertexIdProvider( v -> {
+            return "\"" + modules.get( v ).getCoordinates() + "\"";
+        } );
         exporter.setVertexAttributeProvider( v -> {
             Map<String, Attribute> attrs = new LinkedHashMap<>();
             attrs.put( "label", DefaultAttribute.createAttribute( modules.get( v ).getArtifactId() ) );
+            attrs.put( "tooltip", DefaultAttribute.createAttribute( modules.get( v ).toString() ) );
             attrs.put( "fontsize", DefaultAttribute.createAttribute( 16 ) );
             attrs.put( "shape", DefaultAttribute.createAttribute( "box" ) );
             attrs.put( "style", DefaultAttribute.createAttribute( "rounded" ) );
