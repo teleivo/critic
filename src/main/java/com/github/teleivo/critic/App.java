@@ -71,52 +71,8 @@ public class App implements Callable<Integer>
         // since it contains the build durations
         // which I do not have in my "query" module that I get from the
         // maven dependency graph
-        final Map<Module, Module> reactorModules = new HashMap<>();
-        final Map<String, String> mavenCoordinates = parseMavenNameToCoordinates( mavenArtifactMapping.toPath() );
-
-        try ( Scanner sc = new Scanner( mavenBuildLog ) )
-        {
-            boolean start = false;
-            boolean end = false;
-            while ( sc.hasNextLine() )
-            {
-                String l = sc.nextLine();
-                if ( !start && l.contains( "Reactor Summary" ) )
-                {
-                    start = true;
-                }
-                else if ( start && l.contains( "BUILD" ) )
-                {
-                    end = true;
-                }
-                else if ( start && !end )
-                {
-                    String[] entry = parseMavenReactorSummaryEntry( l );
-                    if ( entry == null )
-                    {
-                        continue;
-                    }
-                    String coordinates = mavenCoordinates.get( entry[0] );
-                    if ( coordinates == null )
-                    {
-                        // throw new IllegalArgumentException(
-                        // String.format( "Cannot find maven project coordinates
-                        // for given name '%s'", entry[0] ) );
-                        // TODO somehow this is swallowed
-                        System.out.println(
-                            String.format( "Cannot find maven project coordinates for given name '%s'", entry[0] ) );
-                        return 1;
-                    }
-                    Duration d = Duration.parse( BuildDuration.parse( entry[1] ) );
-                    Module m = new Module( coordinates, d );
-                    reactorModules.put( m, m );
-                }
-            }
-        }
-        catch ( Exception e )
-        {
-            // TODO: handle exception
-        }
+        final Map<Module, Module> reactorModules = parseMavenReactorSummary( mavenArtifactMapping.toPath(),
+            mavenBuildLog.toPath() );
 
         Graph<Integer, DefaultWeightedEdge> g = GraphTypeBuilder
             .directed()
@@ -255,6 +211,48 @@ public class App implements Callable<Integer>
                     Collectors.toMap( line -> line[0].trim(), line -> line[1].trim() ) );
             return resultMap;
         }
+    }
+
+    static Map<Module, Module> parseMavenReactorSummary( Path mavenArtifactMapping, Path mavenBuildLog )
+        throws IOException
+    {
+        final Map<String, String> mavenCoordinates = parseMavenNameToCoordinates( mavenArtifactMapping );
+        final Map<Module, Module> reactorModules = new HashMap<>();
+        try ( Scanner sc = new Scanner( mavenBuildLog ) )
+        {
+            boolean start = false;
+            boolean end = false;
+            while ( sc.hasNextLine() )
+            {
+                String l = sc.nextLine();
+                if ( !start && l.contains( "Reactor Summary" ) )
+                {
+                    start = true;
+                }
+                else if ( start && l.contains( "BUILD" ) )
+                {
+                    end = true;
+                }
+                else if ( start && !end )
+                {
+                    String[] entry = parseMavenReactorSummaryEntry( l );
+                    if ( entry == null )
+                    {
+                        continue;
+                    }
+                    String coordinates = mavenCoordinates.get( entry[0] );
+                    if ( coordinates == null )
+                    {
+                        throw new IllegalArgumentException(
+                            String.format( "Cannot find maven project coordinates for given name '%s'", entry[0] ) );
+                    }
+                    Duration d = Duration.parse( BuildDuration.parse( entry[1] ) );
+                    Module m = new Module( coordinates, d );
+                    reactorModules.put( m, m );
+                }
+            }
+        }
+        return reactorModules;
     }
 
     static String[] parseMavenReactorSummaryEntry( final String in )
