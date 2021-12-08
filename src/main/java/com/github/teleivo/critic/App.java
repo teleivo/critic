@@ -1,24 +1,15 @@
 package com.github.teleivo.critic;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import com.github.teleivo.critic.maven.BuildDuration;
 import com.github.teleivo.critic.maven.Module;
+import com.github.teleivo.critic.maven.ReactorSummary;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -40,8 +31,6 @@ public class App implements Callable<Integer>
 {
 
     private static final String GRAPH_LABEL_WEIGHT = "weight";
-
-    private static final Pattern MAVEN_PROJECT_DURATION = Pattern.compile( "\\] (.+) \\.+[A-Za-z\\s\\[]+(.+)\\]" );
 
     @Option( names = { "-d",
         "--dependency-graph" }, required = true, description = "Input DOT file of Maven dependency graph generated using https://github.com/ferstl/depgraph-maven-plugin" )
@@ -71,7 +60,8 @@ public class App implements Callable<Integer>
         // since it contains the build durations
         // which I do not have in my "query" module that I get from the
         // maven dependency graph
-        final Map<Module, Module> reactorModules = parseMavenReactorSummary( mavenArtifactMapping.toPath(),
+        final Map<Module, Module> reactorModules = ReactorSummary.parse(
+            mavenArtifactMapping.toPath(),
             mavenBuildLog.toPath() );
 
         Graph<Integer, DefaultWeightedEdge> g = GraphTypeBuilder
@@ -194,76 +184,6 @@ public class App implements Callable<Integer>
         } );
         exporter.exportGraph( rg, output );
         return 0;
-    }
-
-    static Map<String, String> parseMavenNameToCoordinates( Path csv )
-        throws IOException
-    {
-        // NOTE: it does not handle a CSV header differently than the rest of
-        // the CSV
-
-        try (
-            Stream<String> lines = Files.lines( csv ); )
-        {
-            Map<String, String> resultMap = lines.map(
-                line -> line.split( "," ) )
-                .collect(
-                    Collectors.toMap( line -> line[0].trim(), line -> line[1].trim() ) );
-            return resultMap;
-        }
-    }
-
-    static Map<Module, Module> parseMavenReactorSummary( Path mavenArtifactMapping, Path mavenBuildLog )
-        throws IOException
-    {
-        final Map<String, String> mavenCoordinates = parseMavenNameToCoordinates( mavenArtifactMapping );
-        final Map<Module, Module> reactorModules = new HashMap<>();
-        try ( Scanner sc = new Scanner( mavenBuildLog ) )
-        {
-            boolean start = false;
-            boolean end = false;
-            while ( sc.hasNextLine() )
-            {
-                String l = sc.nextLine();
-                if ( !start && l.contains( "Reactor Summary" ) )
-                {
-                    start = true;
-                }
-                else if ( start && l.contains( "BUILD" ) )
-                {
-                    end = true;
-                }
-                else if ( start && !end )
-                {
-                    String[] entry = parseMavenReactorSummaryEntry( l );
-                    if ( entry == null )
-                    {
-                        continue;
-                    }
-                    String coordinates = mavenCoordinates.get( entry[0] );
-                    if ( coordinates == null )
-                    {
-                        throw new IllegalArgumentException(
-                            String.format( "Cannot find maven project coordinates for given name '%s'", entry[0] ) );
-                    }
-                    Duration d = Duration.parse( BuildDuration.parse( entry[1] ) );
-                    Module m = new Module( coordinates, d );
-                    reactorModules.put( m, m );
-                }
-            }
-        }
-        return reactorModules;
-    }
-
-    static String[] parseMavenReactorSummaryEntry( final String in )
-    {
-        Matcher m = MAVEN_PROJECT_DURATION.matcher( in );
-        if ( !m.find() )
-        {
-            return null;
-        }
-
-        return new String[] { m.group( 1 ), m.group( 2 ) };
     }
 
     static List<DefaultWeightedEdge> criticalPath( Graph<Integer, DefaultWeightedEdge> g )
