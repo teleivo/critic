@@ -1,7 +1,6 @@
-package com.github.teleivo.critic;
+package com.github.teleivo.critic.maven;
 
-import static com.github.teleivo.critic.App.criticalPath;
-import static com.github.teleivo.critic.App.penWidth;
+import static com.github.teleivo.critic.maven.CriticalPath.penWidth;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
@@ -14,7 +13,7 @@ import org.jgrapht.graph.builder.GraphTypeBuilder;
 import org.jgrapht.util.SupplierUtil;
 import org.junit.jupiter.api.Test;
 
-class AppTest
+class CriticalPathTest
 {
 
     @Test
@@ -29,7 +28,8 @@ class AppTest
             .edgeClass( DefaultWeightedEdge.class )
             .vertexSupplier( SupplierUtil.createIntegerSupplier() )
             .buildGraph();
-        List<DefaultWeightedEdge> cp = criticalPath( g );
+
+        List<DefaultWeightedEdge> cp = CriticalPath.criticalPath( g );
 
         assertIterableEquals( Collections.emptyList(), cp );
     }
@@ -47,7 +47,8 @@ class AppTest
             .vertexSupplier( SupplierUtil.createIntegerSupplier() )
             .buildGraph();
         g.addVertex( 0 );
-        List<DefaultWeightedEdge> cp = criticalPath( g );
+
+        List<DefaultWeightedEdge> cp = CriticalPath.criticalPath( g );
 
         assertIterableEquals( Collections.emptyList(), cp );
     }
@@ -67,7 +68,7 @@ class AppTest
         g.addVertex( 1 );
         DefaultWeightedEdge e1 = g.addEdge( 0, 1 );
 
-        List<DefaultWeightedEdge> cp = criticalPath( g );
+        List<DefaultWeightedEdge> cp = CriticalPath.criticalPath( g );
 
         assertIterableEquals( List.of( e1 ), cp );
     }
@@ -89,7 +90,7 @@ class AppTest
         DefaultWeightedEdge e1 = g.addEdge( 0, 1 );
         DefaultWeightedEdge e2 = g.addEdge( 1, 2 );
 
-        List<DefaultWeightedEdge> cp = criticalPath( g );
+        List<DefaultWeightedEdge> cp = CriticalPath.criticalPath( g );
 
         assertIterableEquals( List.of( e2, e1 ), cp );
     }
@@ -114,7 +115,7 @@ class AppTest
         g.setEdgeWeight( e1, 1.0 );
         g.setEdgeWeight( e2, 3.0 );
 
-        List<DefaultWeightedEdge> cp = criticalPath( g );
+        List<DefaultWeightedEdge> cp = CriticalPath.criticalPath( g );
 
         assertIterableEquals( List.of( e2 ), cp );
     }
@@ -141,7 +142,7 @@ class AppTest
         g.setEdgeWeight( e2, 1.0 );
         g.setEdgeWeight( e3, 2.0 );
 
-        List<DefaultWeightedEdge> cp = criticalPath( g );
+        List<DefaultWeightedEdge> cp = CriticalPath.criticalPath( g );
 
         assertIterableEquals( List.of( e3, e1 ), cp );
     }
