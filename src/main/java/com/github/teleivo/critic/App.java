@@ -135,16 +135,17 @@ public class App implements Callable<Integer>
 
         EdgeReversedGraph<Integer, DefaultWeightedEdge> rg = new EdgeReversedGraph<>( g );
         List<DefaultWeightedEdge> criticalEdges = criticalPath( rg );
-        // TODO what if there is no criticalEdge?
+        if ( criticalEdges.isEmpty() )
+        {
+            System.out.println( "Maven build order - no critical path found" );
+            return 0;
+        }
         EdgeWeightSummary summary = EdgeWeightSummary.of( rg, criticalEdges );
 
         String label = String.format( "Maven build order - critical path ends at %s and takes %.2fmin",
             modules.get( summary.getMaxTarget() ), summary.getTotal() / 60 );
         System.out.println( label );
 
-        // TODO can I directly create a png alongside the dot file?
-        // TODO adjust penwidth in proportion to totalCost so arrows to costly
-        // modules are thicker
         DOTExporter<Integer, DefaultWeightedEdge> exporter = new DOTExporter<>();
         exporter.setGraphIdProvider( () -> "\"maven build order\"" );
         exporter.setGraphAttributeProvider( () -> {
