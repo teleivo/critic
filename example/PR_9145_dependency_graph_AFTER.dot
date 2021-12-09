@@ -1,0 +1,93 @@
+digraph "dhis" {
+  node [shape="box",style="rounded",fontname="Helvetica",fontsize="14"]
+  edge [fontsize="10",fontname="Helvetica"]
+
+  // Node Definitions:
+  "org.hisp.dhis:dhis-support-commons:jar"[label=<dhis-support-commons>]
+  "org.hisp.dhis:dhis-api:jar"[label=<dhis-api>]
+  "org.hisp.dhis:dhis-support-external:jar"[label=<dhis-support-external>]
+  "org.hisp.dhis:dhis-support-db-migration:jar"[label=<dhis-support-db-migration>]
+  "org.hisp.dhis:dhis-support-hibernate:jar"[label=<dhis-support-hibernate>]
+  "org.hisp.dhis:dhis-support-test:jar"[label=<dhis-support-test<font point-size="10"><br/>(test)</font>>]
+  "org.hisp.dhis:dhis-support-test-json:jar"[label=<dhis-support-test-json<font point-size="10"><br/>(compile/test)</font>>]
+  "org.hisp.dhis:dhis-support-system:jar"[label=<dhis-support-system>]
+  "org.hisp.dhis:dhis-service-schema:jar"[label=<dhis-service-schema>]
+  "org.hisp.dhis:dhis-service-setting:jar"[label=<dhis-service-setting>]
+  "org.hisp.dhis:dhis-service-acl:jar"[label=<dhis-service-acl>]
+  "org.hisp.dhis:dhis-support-artemis:jar"[label=<dhis-support-artemis>]
+  "org.hisp.dhis:dhis-support-audit:jar"[label=<dhis-support-audit>]
+  "org.hisp.dhis:dhis-service-audit-consumer:jar"[label=<dhis-service-audit-consumer>]
+  "org.hisp.dhis:dhis-service-node:jar"[label=<dhis-service-node>]
+  "org.hisp.dhis:dhis-service-field-filtering:jar"[label=<dhis-service-field-filtering>]
+  "org.hisp.dhis:dhis-support-jdbc:jar"[label=<dhis-support-jdbc>]
+  "org.hisp.dhis:dhis-support-expression-parser:jar"[label=<dhis-support-expression-parser>]
+  "org.hisp.dhis:dhis-support-cache-invalidation:jar"[label=<dhis-support-cache-invalidation>]
+  "org.hisp.dhis:dhis-service-core:jar"[label=<dhis-service-core>]
+  "org.hisp.dhis:dhis-service-validation:jar"[label=<dhis-service-validation>]
+  "org.hisp.dhis:dhis-service-program-rule:jar"[label=<dhis-service-program-rule>]
+  "org.hisp.dhis:dhis-service-administration:jar"[label=<dhis-service-administration>]
+  "org.hisp.dhis:dhis-service-dxf2:jar"[label=<dhis-service-dxf2>]
+  "org.hisp.dhis:dhis-service-metadata-workflow:jar"[label=<dhis-service-metadata-workflow>]
+  "org.hisp.dhis:dhis-service-analytics:jar"[label=<dhis-service-analytics>]
+  "org.hisp.dhis:dhis-service-tracker:jar"[label=<dhis-service-tracker>]
+  "org.hisp.dhis:dhis-service-reporting:jar"[label=<dhis-service-reporting>]
+  "org.hisp.dhis:dhis-web-api:jar"[label=<dhis-web-api>]
+  "org.hisp.dhis:dhis-web-api-test:jar"[label=<dhis-web-api-test>]
+
+  // Edge Definitions:
+  "org.hisp.dhis:dhis-support-commons:jar" -> "org.hisp.dhis:dhis-api:jar"
+  "org.hisp.dhis:dhis-support-external:jar" -> "org.hisp.dhis:dhis-support-commons:jar"
+  "org.hisp.dhis:dhis-support-db-migration:jar" -> "org.hisp.dhis:dhis-support-external:jar"
+  "org.hisp.dhis:dhis-support-hibernate:jar" -> "org.hisp.dhis:dhis-support-db-migration:jar"
+  "org.hisp.dhis:dhis-support-test:jar" -> "org.hisp.dhis:dhis-support-test-json:jar"
+  "org.hisp.dhis:dhis-support-test:jar" -> "org.hisp.dhis:dhis-support-external:jar"
+  "org.hisp.dhis:dhis-support-system:jar" -> "org.hisp.dhis:dhis-support-hibernate:jar"
+  "org.hisp.dhis:dhis-support-system:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-schema:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-schema:jar" -> "org.hisp.dhis:dhis-support-system:jar"
+  "org.hisp.dhis:dhis-service-setting:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-setting:jar" -> "org.hisp.dhis:dhis-support-system:jar"
+  "org.hisp.dhis:dhis-service-acl:jar" -> "org.hisp.dhis:dhis-service-schema:jar"
+  "org.hisp.dhis:dhis-service-acl:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-support-artemis:jar" -> "org.hisp.dhis:dhis-service-schema:jar"
+  "org.hisp.dhis:dhis-support-audit:jar" -> "org.hisp.dhis:dhis-support-system:jar"
+  "org.hisp.dhis:dhis-support-audit:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-audit-consumer:jar" -> "org.hisp.dhis:dhis-support-artemis:jar"
+  "org.hisp.dhis:dhis-service-audit-consumer:jar" -> "org.hisp.dhis:dhis-support-audit:jar"
+  "org.hisp.dhis:dhis-service-audit-consumer:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-node:jar" -> "org.hisp.dhis:dhis-service-acl:jar"
+  "org.hisp.dhis:dhis-service-node:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-field-filtering:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-field-filtering:jar" -> "org.hisp.dhis:dhis-service-schema:jar"
+  "org.hisp.dhis:dhis-support-jdbc:jar" -> "org.hisp.dhis:dhis-support-system:jar"
+  "org.hisp.dhis:dhis-support-expression-parser:jar" -> "org.hisp.dhis:dhis-support-jdbc:jar"
+  "org.hisp.dhis:dhis-support-cache-invalidation:jar" -> "org.hisp.dhis:dhis-support-system:jar"
+  "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-service-setting:jar"
+  "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-service-node:jar"
+  "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-service-audit-consumer:jar"
+  "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-support-expression-parser:jar"
+  "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-core:jar" -> "org.hisp.dhis:dhis-support-cache-invalidation:jar"
+  "org.hisp.dhis:dhis-service-validation:jar" -> "org.hisp.dhis:dhis-service-core:jar"
+  "org.hisp.dhis:dhis-service-validation:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-program-rule:jar" -> "org.hisp.dhis:dhis-service-core:jar"
+  "org.hisp.dhis:dhis-service-program-rule:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar"
+  "org.hisp.dhis:dhis-service-administration:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-service-program-rule:jar"
+  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-service-validation:jar"
+  "org.hisp.dhis:dhis-service-dxf2:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-metadata-workflow:jar" -> "org.hisp.dhis:dhis-service-dxf2:jar"
+  "org.hisp.dhis:dhis-service-metadata-workflow:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-tracker:jar" -> "org.hisp.dhis:dhis-service-dxf2:jar"
+  "org.hisp.dhis:dhis-service-tracker:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-service-reporting:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-web-api:jar" -> "org.hisp.dhis:dhis-service-metadata-workflow:jar"
+  "org.hisp.dhis:dhis-web-api:jar" -> "org.hisp.dhis:dhis-service-reporting:jar"
+  "org.hisp.dhis:dhis-web-api:jar" -> "org.hisp.dhis:dhis-service-tracker:jar"
+  "org.hisp.dhis:dhis-web-api:jar" -> "org.hisp.dhis:dhis-service-field-filtering:jar"
+  "org.hisp.dhis:dhis-web-api:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+  "org.hisp.dhis:dhis-web-api-test:jar" -> "org.hisp.dhis:dhis-web-api:jar"
+  "org.hisp.dhis:dhis-web-api-test:jar" -> "org.hisp.dhis:dhis-support-test:jar"
+}
