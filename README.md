@@ -22,19 +22,28 @@ https://github.com/ferstl/depgraph-maven-plugin in DOT file format.
 
 ```sh
 mvn com.github.ferstl:depgraph-maven-plugin:aggregate \
-    --file ~/code/dhis2/core/dhis-2/pom.xml \
+    --file ~/your_multimodule_project/pom.xml \
     --batch-mode --no-transfer-progress \
     -DcreateImage=true -DimageFormat=png -DmergeScopes=true \
-    -DoutputDirectory=../../deps \
-    -Dincludes=org.hisp.dhis:dhis-service-dxf2,org.hisp.dhis:dhis-service-core,org.hisp.dhis:dhis-service-tracker,org.hisp.dhis:dhis-service-reporting,org.hisp.dhis:dhis-service-validation,org.hisp.dhis:dhis-support-audit,org.hisp.dhis:dhis-service-program-rule,org.hisp.dhis:dhis-service-analytics,org.hisp.dhis:dhis-service-administration
+    -DoutputDirectory=~/somewhere \
+    -Dincludes=org.hisp.dhis \
+    -Dexcludes=org.hisp.dhis:dhis-web-embedded-jetty
 ```
+
+*Note: its important to use mergeScopes so your each of your modules shows up
+as one node in the graph. Otherwise you will potentially have multiple ones for
+test, compile, ... Each of your modules only appears once in the reactor build
+summary. I therefore only want to assign it one cost/weight.*
 
 Compile and run
 
 ```sh
 mvn clean package
-java -cp target/critic-1.0-SNAPSHOT-jar-with-dependencies.jar \
-  com.github.teleivo.critic.App -d src/main/resources/dependency-graph.dot -o foo.dot
+java -cp target/critic-1.0-SNAPSHOT-jar-with-dependencies.jar com.github.teleivo.critic.App \
+  --dependency-graph ~/somewhere/dependency-graph.dot \
+  --artifact-mapping ~/somewhere/maven_name_to_coordinates.csv \
+  --build-log ~/somewhere/maven_build_log
+  --output ~/somewhere/critical_path.dot
 ```
 
 If all goes well you should now have a DOT file with your dependency graph and
@@ -42,7 +51,7 @@ the critical path highlighted.
 
 It should also print something like
 
-`Maven build order - critical path ends at org.hisp.dhis:dhis-service-reporting:jar and takes 12.30min`
+`Maven build order - critical path ends at org.hisp.dhis:dhis-web-api-test[PT6.949S] and takes 17.63min`
 
 ## What next?
 
@@ -59,6 +68,37 @@ Once you have identified your critical path you can either
   install -DskipTests -Dmaven.test.skip=true`).
 * there might be other avenues I haven't tought about. If so please let me know
   :smile:
+
+## Example Case Study
+
+I started this project for my work at [DHIS2](https://dhis2.org/about/). I
+analyzed the build of our Java application built using
+[Maven](https://maven.apache.org/). It is a multi-module Maven project with 30+
+Maven modules in a single [repository](https://github.com/dhis2/dhis2-core/).
+
+`./example/` contains all files I used to for example analyze the test run of
+
+https://github.com/dhis2/dhis2-core/pull/9145
+
+You can recreate them by running
+
+```sh
+mvn clean package
+java -cp target/critic-1.0-SNAPSHOT-jar-with-dependencies.jar com.github.teleivo.critic.App \
+  --dependency-graph example/PR_9145_dependency_graph.dot \
+  --artifact-mapping example/maven_name_to_coordinates.csv \
+  --build-log example/PR_9145_job_integration_test_step_run_integration_tests \
+  --output example/PR_9145_critical_path.dot
+```
+
+[PR_9145_critical_path.png](./example/PR_9145_critical_path.png) shows the
+critical path. It also highlighted that it takes > 7min to build and test
+the module `dhis-service-analytics` which takes up a big chunk of the overall
+duration. At the time we were also running our
+integration tests without [Maven's parallel build feature](https://cwiki.apache.org/confluence/display/MAVEN/Parallel+builds+in+Maven+3).
+So runs could take ~ 23min. We decided to run tests for `dhis-service-analytics`
+in another job, so concurrently. Integration tests now run between 13min -
+15min :tada:
 
 ## Limitations
 
