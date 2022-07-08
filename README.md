@@ -57,7 +57,7 @@ It should also print something like
 
 Once you have identified your critical path you can either
 
-* investigate how to reduce the time spend building & testing each module
+* investigate how to reduce the time spent building & testing each module
 * or extract the build & testing of a module and run that outside of a full
   `mvn clean install` that builds your entire multi-module project. This way
   you do not need to adhere to the Maven reactor build order and can run the
