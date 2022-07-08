@@ -3,7 +3,7 @@
 Finds the critical path in your Maven multi-module project. It does so based on
 the dependency graph and on a [Maven
 reactor](https://maven.apache.org/guides/mini/guide-multiple-modules.html)
-summaris build timings.
+summary of build timings.
 
 ## Why
 
